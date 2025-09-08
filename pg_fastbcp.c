@@ -161,8 +161,8 @@ xp_RunFastBcp_secure(PG_FUNCTION_ARGS)
     char buffer[1024];
     const char *pg_path;
     char numbuf[34];
-    int i, b, x, p;
-    bool is_bool, is_int, is_password;
+    int i, b, x, p, f;
+    bool is_bool,is_value_bool, is_int, is_password;
     const char *val = NULL;
     int status;
     text *enc;
