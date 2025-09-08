@@ -302,7 +302,7 @@ xp_RunFastBcp_secure(PG_FUNCTION_ARGS)
                 /* Total rows */
                 token = strstr(out, "Total data rows : ");
                 if (token) {
-                    char *p = token + strlen("Total rows : ");
+                    char *p = token + strlen("Total data rows : ");
                     char *endptr = NULL;
                     long v = strtol(p, &endptr, 10);
                     if (endptr != p) total_rows = v;
@@ -311,7 +311,7 @@ xp_RunFastBcp_secure(PG_FUNCTION_ARGS)
                 /* Total columns */
                 token = strstr(out, "Total data columns : ");
                 if (token) {
-                    char *p = token + strlen("Total columns : ");
+                    char *p = token + strlen("Total data columns : ");
                     char *endptr = NULL;
                     long v = strtol(p, &endptr, 10);
                     if (endptr != p) total_columns = (int)v;
