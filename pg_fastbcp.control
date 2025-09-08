@@ -1,0 +1,6 @@
+# pg_fastbcp extension
+comment = 'PostgreSQL FastBcp extension'
+default_version = '1.0'
+module_pathname = '$libdir/pg_fastbcpr'
+relocatable = true
+requires = 'pgcrypto'
