@@ -42,8 +42,6 @@ jobs:
         /I"$I" `
         /I"$S" `
         /I"$L" `
-        /D_WIN32 `
-        /DWIN32 `
         /link /LIBPATH:"$L" postgres.lib ws2_32.lib
 
     - name: Create Release Archive for PG ${{ matrix.pg_version }}
