@@ -171,9 +171,9 @@ xp_RunFastBcp_secure(PG_FUNCTION_ARGS)
     if (get_call_result_type(fcinfo, NULL, &tupdesc) != TYPEFUNC_COMPOSITE)
         ereport(ERROR, (errmsg("The function should return a record")));
     
-    // Le nombre de paramètres dans PG_GETARG_ pour l'index du chemin sera maintenant 30
-    if (fcinfo->nargs > 30 && !PG_ARGISNULL(30)) {
-        pg_path = text_to_cstring(PG_GETARG_TEXT_PP(30));
+    // Le nombre de paramètres dans PG_GETARG_ pour l'index du chemin sera maintenant 31
+    if (fcinfo->nargs > 31 && !PG_ARGISNULL(31)) {
+        pg_path = text_to_cstring(PG_GETARG_TEXT_PP(31));
         #ifdef _WIN32
         snprintf(binary_path, sizeof(binary_path), "%s\\%s", pg_path, BINARY_NAME);
         #else
@@ -196,8 +196,8 @@ xp_RunFastBcp_secure(PG_FUNCTION_ARGS)
     
     appendStringInfo(command, "%s", binary_path);
 
-    // Boucle pour itérer sur les arguments. Le nombre d'arguments est maintenant 30.
-    for (i = 0; i < 30; i++) {
+    // Boucle pour itérer sur les arguments. Le nombre d'arguments est maintenant 31.
+    for (i = 0; i < 31; i++) {
         if (PG_ARGISNULL(i)) continue;
         
         is_bool = false;
