@@ -41,7 +41,7 @@ RETURNS TABLE (
     output text,
     total_rows bigint,
     total_columns integer,
-    total_time_ms bigint    
+    total_time bigint    
 ) AS 'pg_fastbcp','xp_RunFastBcp_secure'
 LANGUAGE C;
 
