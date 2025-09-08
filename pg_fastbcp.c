@@ -132,13 +132,14 @@ xp_RunFastBcp_secure(PG_FUNCTION_ARGS)
     // NOUVEAU: Mettre à jour les noms des arguments et leur nombre
     // Le nombre de paramètres est 31 (29 + password + path)
     const char *arg_names[] = {
-        "--trusted", "--user", "--password", "--connectionstring", "--dsn", "--provider",
-        "--server", "--database", "--query", "--sourceschema", "--fileinput", "--sourcetable",
-        "--directory", "--fileoutput", "--timestamped", "--encoding", "--delimiter", "--quotes",
-        "--dateformat", "--decimalseparator", "--noheader", "--boolformat", "--method",
-        "--distributekeycolumn", "--paralleldegree", "--merge", "--license", "--runid",
-        "--cloudprofile", "--settingsfile",
-        "__fastbcp_path"
+    "--connectiontype", "--connectionstring", "--dsn", "--provider",
+    "--server", "--user", "--password", "--trusted", "--database",
+    "--decimalseparator", "--fileinput", "--query", "--sourceschema",
+    "--sourcetable", "--fileoutput", "--directory", "--delimiter",
+    "--quotes", "--dateformat", "--encoding", "--paralleldegree",
+    "--method", "--distributekeycolumn", "--merge", "--timestamped",
+    "--noheader", "--boolformat", "--runid", "--settingsfile",
+    "--cloudprofile", "--license", "__fastbcp_path"
     };
 
     // NOUVEAU: Mettre à jour les paramètres booléens et entiers
