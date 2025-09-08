@@ -114,14 +114,13 @@ Datum
 xp_RunFastBcp_secure(PG_FUNCTION_ARGS)
 {
     TupleDesc tupdesc;
-    Datum values[6]; // Gardez la même structure de retour
-    bool nulls[6] = {false, false, false, false, false, false};
+    Datum values[5]; // Gardez la même structure de retour
+    bool nulls[5] = {false, false, false, false, false};
     HeapTuple tuple;
 
     static int exit_code = 0;
     static long total_rows = -1;
     static int total_columns = -1; // FastBcp ne retourne pas ce paramètre de manière standard. Nous pourrions le laisser à -1 ou l'enlever.
-    static long transfer_time = -1;
     static long total_time = -1;
     
     StringInfo command = makeStringInfo();
@@ -301,29 +300,23 @@ xp_RunFastBcp_secure(PG_FUNCTION_ARGS)
             char *token = NULL;
             if (out && out[0] != '\0') {
                 /* Total rows */
-                token = strstr(out, "Rows : ");
+                token = strstr(out, "Total data rows : ");
                 if (token) {
-                    char *p = token + strlen("Rows : ");
+                    char *p = token + strlen("Total rows : ");
                     char *endptr = NULL;
                     long v = strtol(p, &endptr, 10);
                     if (endptr != p) total_rows = v;
                 }
-                
-                // FastBcp ne retourne pas les colonnes de la même manière que FastTransfer.
-                // Vous pouvez garder total_columns à -1 ou l'enlever de la structure de retour si vous le souhaitez.
 
-                /* Transfer time */
-                token = strstr(out, "Transfert time : Elapsed=");
-                if (!token) token = strstr(out, "Transfer time : Elapsed=");
+                /* Total columns */
+                token = strstr(out, "Total data columns : ");
                 if (token) {
-                    char *p = token;
-                    char *eq = strchr(p, '=');
-                    if (eq) {
-                        char *endptr = NULL;
-                        long v = strtol(eq + 1, &endptr, 10);
-                        if (endptr != (eq + 1)) transfer_time = v;
-                    }
+                    char *p = token + strlen("Total columns : ");
+                    char *endptr = NULL;
+                    long v = strtol(p, &endptr, 10);
+                    if (endptr != p) total_columns = (int)v;
                 }
+
 
                 /* Total time */
                 token = strstr(out, "Total time : Elapsed=");
@@ -356,9 +349,8 @@ xp_RunFastBcp_secure(PG_FUNCTION_ARGS)
     values[0] = Int32GetDatum(exit_code);
     values[1] = CStringGetTextDatum(result_output->data);
     values[2] = Int64GetDatum(total_rows);
-    values[3] = Int32GetDatum(total_columns); // Gardé pour la compatibilité
-    values[4] = Int64GetDatum(transfer_time);
-    values[5] = Int64GetDatum(total_time);
+    values[3] = Int32GetDatum(total_columns); 
+    values[4] = Int64GetDatum(total_time);
     
     tuple = heap_form_tuple(tupdesc, values, nulls);
     
