@@ -143,14 +143,18 @@ xp_RunFastBcp_secure(PG_FUNCTION_ARGS)
     };
 
     // NOUVEAU: Mettre à jour les paramètres booléens et entiers
-    const char *bool_params[] = {
-        "--trusted", "--timestamped", "--quotes", "--noheader", "--merge"
+    const char *flag_params[] = {
+        "--trusted", "--timestamped", "--quotes", "--noheader"
     };
     const char *int_params[] = {
         "--paralleldegree"
     };
     const char *password_params[] = {
         "--password"
+    };
+
+    static const char *value_bool_params[] = {
+        "--merge",
     };
     
     FILE *fp;
@@ -199,19 +203,36 @@ xp_RunFastBcp_secure(PG_FUNCTION_ARGS)
     // Boucle pour itérer sur les arguments. Le nombre d'arguments est maintenant 31.
     for (i = 0; i < 31; i++) {
         if (PG_ARGISNULL(i)) continue;
-        
-        is_bool = false;
-        for (b = 0; b < sizeof(bool_params) / sizeof(char *); b++) {
-            if (strcmp(arg_names[i], bool_params[b]) == 0) {
-                is_bool = true;
+
+        // Vérifie si le paramètre est un booléen de type "switch"
+        is_flag = false;
+        for (f = 0; f < sizeof(flag_params) / sizeof(char *); f++) {
+            if (strcmp(arg_names[i], flag_params[f]) == 0) {
+                is_flag = true;
                 break;
             }
         }
-        
-        if (is_bool) {
+        if (is_flag) {
+            // Si le paramètre est un switch et est true, on l'ajoute sans valeur
             if (PG_GETARG_BOOL(i)) {
                 appendStringInfo(command, " %s", arg_names[i]);
             }
+            continue;
+        }
+
+        // Vérifie si le paramètre est un booléen qui nécessite une valeur
+        is_value_bool = false;
+        for (b = 0; b < sizeof(value_bool_params) / sizeof(char *); b++) {
+            if (strcmp(arg_names[i], value_bool_params[b]) == 0) {
+                is_value_bool = true;
+                break;
+            }
+        }
+
+        if (is_value_bool) {
+            // Si le paramètre est un booléen avec valeur, on ajoute la valeur
+            val = PG_GETARG_BOOL(i) ? "true" : "false";
+            appendStringInfo(command, " %s \"%s\"", arg_names[i], val);
             continue;
         }
         
