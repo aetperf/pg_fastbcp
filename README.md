@@ -3,14 +3,26 @@
 A PostgreSQL extension to run the FastBCP tool from an SQL function, enabling fast data transfer between databases.
 
 ## Table of Contents
+- [FastBCP Tool Requirement](#fastbcp-tool-requirement)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
-  - [Method 1: Automated Installation](#method-1-automated-installation)
-  - [Method 2: Manual Installation](#method-2-manual-installation)
+  - [Windows](#windows)
+  - [Linux](#linux)
 - [SQL Setup](#sql-setup)
+- [Function: pg_fasttransfer_encrypt](#function-pg_fasttransfer_encrypt)
 - [Function: xp_RunFastBcp_secure Usage](#function-xp_runfastbcp_secure-usage)
 - [Function Return Structure](#function-return-structure)
 - [Notes](#notes)
+
+---
+
+## FastBCP Tool Requirement
+This extension requires the **FastBCP tool** to be installed separately.
+
+Download FastBCP and get a free trial license here:  
+👉 [https://www.arpe.io/get-your-fastbcp-trial](https://www.arpe.io/get-your-fastbcp-trial)
+
+Once downloaded, extract the archive and provide the folder path using the `fastbcp_path` parameter when calling the `xp_RunFastBcp_secure` SQL function.
 
 ---
 
@@ -21,9 +33,11 @@ A PostgreSQL extension to run the FastBCP tool from an SQL function, enabling fa
 ---
 
 ## Installation
-This section covers the two ways to install the **pg_fastbcp** extension on Windows.
+This section covers how to install the **pg_fastbcp** extension.
 
-### Method 1: Automated Installation
+### Windows
+
+#### Automated Installation
 The easiest way to install the extension is by using the `install-win.bat` script included in the archive.
 
 1. Extract the contents of the ZIP file into a folder. This folder should contain the following files:  
@@ -35,7 +49,7 @@ The easiest way to install the extension is by using the `install-win.bat` scrip
 2. Right-click on the `install-win.bat` file and select **"Run as administrator"**.  
 3. The script will automatically detect your PostgreSQL installation and copy the files to the correct locations.
 
-### Method 2: Manual Installation
+#### Manual Installation
 If the automated script fails or you prefer to install the files manually, follow these steps:
 
 1. Stop your PostgreSQL service. (**Critical step** to ensure files are not in use).  
@@ -48,6 +62,9 @@ C:\Program Files\PostgreSQL\<version>
 3. Copy the `pg_fastbcp.dll` file into the `lib` folder of your PostgreSQL installation.  
 4. Copy the `pg_fastbcp.control` and `pg_fastbcp--1.0.sql` files into the `share\extension` folder.  
 5. Restart your PostgreSQL service.  
+
+### Linux
+*(Instructions coming soon)*
 
 ---
 
@@ -64,7 +81,31 @@ DROP EXTENSION IF EXISTS pg_fastbcp CASCADE;
 ### Create the extension
 
 ```sql
-CREATE EXTENSION pg_fastbcp;
+CREATE EXTENSION pg_fastbcp CASCADE;
+```
+
+---
+
+
+## Function: pg\_fasttransfer\_encrypt
+
+This function encrypts a given text string using `pgp_sym_encrypt` and encodes the result in base64.
+It is useful for storing sensitive information, such as passwords, in a secure manner within your SQL scripts or configuration.
+
+The `xp_RunFastTransfer_secure` function will automatically decrypt any values passed to its `--sourcepassword` and `--targetpassword` arguments using the same encryption key.
+The encryption/decryption key is defined by the `PGFT_ENCRYPTION_KEY` variable in the C source file (`pg_fasttransfer.c`) and can be changed by recompiling the extension.
+
+### Syntax
+
+```sql
+pg_fasttransfer_encrypt(text_to_encrypt text) RETURNS text
+```
+
+### Example
+
+```sql
+SELECT pg_fasttransfer_encrypt('MySecurePassword');
+-- Returns: A base64-encoded encrypted string, e.g., "PgP...base64encodedstring=="
 ```
 
 ---
@@ -112,7 +153,7 @@ The function returns a table with the following columns, providing details about
 | output          | text    | The full log output from the FastBCP tool. |
 | total\_rows     | bigint  | The total number of rows transferred.      |
 | total\_columns  | integer | The total number of columns transferred.   |
-| total\_time\_ms | bigint  | The total execution time in milliseconds.  |
+| total\_time | bigint  | The total execution time in milliseconds.  |
 
 ---
 
