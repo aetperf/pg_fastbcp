@@ -1,6 +1,6 @@
 
 # pg_fastbcp
-A PostgreSQL extension to run the FastBCP tool from an SQL function, enabling fast data transfer between databases.
+A PostgreSQL extension to run the [FastBCP](https://www.arpe.io/fastbcp/?v=82a9e4d26595) tool from an SQL function, enabling fast extract from databases.
 
 ## Table of Contents
 - [FastBCP Tool Requirement](#fastbcp-tool-requirement)
@@ -93,7 +93,7 @@ This function encrypts a given text string using `pgp_sym_encrypt` and encodes t
 It is useful for storing sensitive information, such as passwords, in a secure manner within your SQL scripts or configuration.
 
 The `xp_RunFastTransfer_secure` function will automatically decrypt any values passed to its `--sourcepassword` and `--targetpassword` arguments using the same encryption key.
-The encryption/decryption key is defined by the `PGFT_ENCRYPTION_KEY` variable in the C source file (`pg_fasttransfer.c`) and can be changed by recompiling the extension.
+**The encryption/decryption key is defined by the `PGFT_ENCRYPTION_KEY` variable in the C source file (`pg_fasttransfer.c`)**
 
 ### Syntax
 
@@ -112,7 +112,51 @@ SELECT pg_fasttransfer_encrypt('MySecurePassword');
 
 ## Function: xp\_RunFastBcp\_secure Usage
 
-This is the main function to execute the FastBCP tool. It takes various parameters to configure the data transfer operation.
+This is the main function to execute the FastBCP tool.
+It takes various parameters to configure the data extraction operation.
+
+Password argument (`password`) will be automatically decrypted 
+
+**Syntax:**
+
+```sql
+xp_RunFastBcp_secure(
+    connectiontype text DEFAULT NULL,
+    connectionstring text DEFAULT NULL,
+    dsn text DEFAULT NULL,
+    provider text DEFAULT NULL,
+    server text DEFAULT NULL,
+    user_ text DEFAULT NULL,
+    password text DEFAULT NULL,
+    trusted boolean DEFAULT NULL,
+    database_name text DEFAULT NULL,
+    decimalseparator text DEFAULT NULL,
+    fileinput text DEFAULT NULL,
+    query text DEFAULT NULL,
+    sourceschema text DEFAULT NULL,
+    sourcetable text DEFAULT NULL,
+    fileoutput text DEFAULT NULL,
+    directory text DEFAULT NULL,
+    delimiter text DEFAULT NULL,
+    quotes boolean DEFAULT NULL,
+    dateformat text DEFAULT NULL,
+    encoding text DEFAULT NULL,
+    paralleldegree integer DEFAULT NULL,
+    method text DEFAULT NULL,
+    distributekeycolumn text DEFAULT NULL,
+    merge boolean DEFAULT NULL,
+    timestamped boolean DEFAULT NULL,
+    noheader boolean DEFAULT NULL,
+    boolformat text DEFAULT NULL,
+    runid text DEFAULT NULL,
+    settingsfile text DEFAULT NULL,
+    cloudprofile text DEFAULT NULL,
+    license text DEFAULT NULL,
+    fastbcp_path text DEFAULT NULL
+) RETURNS TABLE
+```
+
+---
 
 ### Windows example
 
