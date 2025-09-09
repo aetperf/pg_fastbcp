@@ -39,9 +39,9 @@
 #endif
 
 #ifdef _WIN32
-#define BINARY_NAME "FastBcp.exe"
+#define BINARY_NAME "FastBCP.exe"
 #else
-#define BINARY_NAME "FastBcp"
+#define BINARY_NAME "FastBCP"
 #endif
 
 #ifdef PG_MODULE_MAGIC
