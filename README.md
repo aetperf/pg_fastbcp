@@ -24,6 +24,12 @@ Download FastBCP and get a free trial license here:
 
 Once downloaded, extract the archive and provide the folder path using the `fastbcp_path` parameter when calling the `xp_RunFastBcp_secure` SQL function.
 
+⚠️ **Important:** The PostgreSQL server process usually runs under the `postgres` user account.  
+You must ensure that this user has **execute permissions** on the `FastBCP` binary and **read permissions** on the license file.
+
+On Windows, make sure that the PostgreSQL service account (by default `NT AUTHORITY\NetworkService` or `postgres` if you installed it manually) has the right to execute the `FastBCP.exe` binary and read the `.lic` file.
+
+
 ---
 
 ## Prerequisites
