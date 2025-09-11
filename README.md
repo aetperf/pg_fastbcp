@@ -2,6 +2,8 @@
 # pg_fastbcp
 A PostgreSQL extension to run the [FastBCP](https://www.arpe.io/fastbcp/?v=82a9e4d26595) tool from an SQL function, enabling fast extract from databases.
 
+![Tuto](assets/pg_fastbcp.gif)
+
 ## Table of Contents
 - [Prerequisites](#prerequisites)
 - [FastBCP Tool Requirement](#fastbcp-tool-requirement)
