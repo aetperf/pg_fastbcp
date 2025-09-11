@@ -8,8 +8,8 @@ A PostgreSQL extension to run the [FastBCP](https://www.arpe.io/fastbcp/?v=82a9e
 - [Prerequisites](#prerequisites)
 - [FastBCP Tool Requirement](#fastbcp-tool-requirement)
 - [Installation](#installation)
-  - [Windows](#windows)
   - [Linux](#linux)
+  - [Windows](#windows)
 - [SQL Setup](#sql-setup)
 - [Function: pg_fastbcp_encrypt](#function-pg_fastbcp_encrypt)
 - [Function: xp_RunFastBcp_secure Usage](#function-xp_runfastbcp_secure-usage)
@@ -64,35 +64,6 @@ Make sure that the PostgreSQL service account (by default `NT AUTHORITY\NetworkS
 
 ## Installation
 This section covers how to install the **pg_fastbcp** extension.
-
-
-### Windows
-
-#### Automated Installation
-The easiest way to install the extension is by using the `install-win.bat` script included in the archive.
-
-1. Extract the contents of the ZIP file into a folder. This folder should contain the following files:  
-   - `pg_fastbcp.dll`  
-   - `pg_fastbcp.control`  
-   - `pg_fastbcp--1.0.sql`  
-   - `install-win.bat`  
-
-2. Right-click on the `install-win.bat` file and select **"Run as administrator"**.  
-3. The script will automatically detect your PostgreSQL installation and copy the files to the correct locations.
-
-#### Manual Installation
-If the automated script fails or you prefer to install the files manually, follow these steps:
-
-1. Stop your PostgreSQL service. (**Critical step** to ensure files are not in use).  
-2. Locate your PostgreSQL installation folder, typically found at:  
-```
-C:\Program Files\PostgreSQL\<version>
-```
-3. Copy the `pg_fastbcp.dll` file into the `lib` folder of your PostgreSQL installation.  
-4. Copy the `pg_fastbcp.control` and `pg_fastbcp--1.0.sql` files into the `share\extension` folder.  
-5. Restart your PostgreSQL service.  
-
----
 
 ### Linux
 
@@ -151,6 +122,34 @@ sudo cp pg_fastbcp.control pg_fastbcp--1.0.sql /usr/share/postgresql/<version>/e
 ```bash
 sudo systemctl start postgresql
 ```
+
+---
+
+### Windows
+
+#### Automated Installation
+The easiest way to install the extension is by using the `install-win.bat` script included in the archive.
+
+1. Extract the contents of the ZIP file into a folder. This folder should contain the following files:  
+   - `pg_fastbcp.dll`  
+   - `pg_fastbcp.control`  
+   - `pg_fastbcp--1.0.sql`  
+   - `install-win.bat`  
+
+2. Right-click on the `install-win.bat` file and select **"Run as administrator"**.  
+3. The script will automatically detect your PostgreSQL installation and copy the files to the correct locations.
+
+#### Manual Installation
+If the automated script fails or you prefer to install the files manually, follow these steps:
+
+1. Stop your PostgreSQL service. (**Critical step** to ensure files are not in use).  
+2. Locate your PostgreSQL installation folder, typically found at:  
+```
+C:\Program Files\PostgreSQL\<version>
+```
+3. Copy the `pg_fastbcp.dll` file into the `lib` folder of your PostgreSQL installation.  
+4. Copy the `pg_fastbcp.control` and `pg_fastbcp--1.0.sql` files into the `share\extension` folder.  
+5. Restart your PostgreSQL service.  
 
 
 ## SQL Setup
