@@ -3,18 +3,22 @@
 A PostgreSQL extension to run the [FastBCP](https://www.arpe.io/fastbcp/?v=82a9e4d26595) tool from an SQL function, enabling fast extract from databases.
 
 ## Table of Contents
-- [FastBCP Tool Requirement](#fastbcp-tool-requirement)
 - [Prerequisites](#prerequisites)
+- [FastBCP Tool Requirement](#fastbcp-tool-requirement)
 - [Installation](#installation)
   - [Windows](#windows)
   - [Linux](#linux)
 - [SQL Setup](#sql-setup)
-- [Function: pg_fasttransfer_encrypt](#function-pg_fasttransfer_encrypt)
+- [Function: pg_fastbcp_encrypt](#function-pg_fastbcp_encrypt)
 - [Function: xp_RunFastBcp_secure Usage](#function-xp_runfastbcp_secure-usage)
 - [Function Return Structure](#function-return-structure)
 - [Notes](#notes)
 
----
+
+## Prerequisites
+- Administrator privileges on Windows to copy files to the PostgreSQL installation directory.  
+- Your **FastBCP tool binaries**. This extension requires the tool to be installed separately.
+
 
 ## FastBCP Tool Requirement
 This extension requires the **FastBCP tool** to be installed separately.
@@ -25,21 +29,40 @@ Download FastBCP and get a free trial license here:
 Once downloaded, extract the archive and provide the folder path using the `fastbcp_path` parameter when calling the `xp_RunFastBcp_secure` SQL function.
 
 ⚠️ **Important:** The PostgreSQL server process usually runs under the `postgres` user account.  
-You must ensure that this user has **execute permissions** on the `FastBCP` binary and **read permissions** on the license file.
-
-On Windows, make sure that the PostgreSQL service account (by default `NT AUTHORITY\NetworkService` or `postgres` if you installed it manually) has the right to execute the `FastBCP.exe` binary and read the `.lic` file.
-
+You must ensure that this user has the appropriate permissions to execute the `FastBCP` binary and read the license file.
 
 ---
 
-## Prerequisites
-- Administrator privileges on Windows to copy files to the PostgreSQL installation directory.  
-- Your **FastBCP tool binaries**. This extension requires the tool to be installed separately.
+### On Linux
+- The `FastBCP` binary must be **executable by the `postgres` user**.  
+- The license file (`.lic`) must be **readable by the `postgres` user**.  
+- Example:  
+```bash
+# Grant execute permission on the FastBCP binary
+sudo chmod +x /path/to/FastBCP
+
+# Ensure the postgres user can access it
+sudo chown postgres:postgres /path/to/FastBCP
+sudo chmod 750 /path/to/FastBCP
+
+# Grant read permission on the license file
+sudo chown postgres:postgres /path/to/license.lic
+sudo chmod 640 /path/to/license.lic
+```
 
 ---
+
+### On Windows
+
+Make sure that the PostgreSQL service account (by default `NT AUTHORITY\NetworkService` or `postgres` if you installed it manually) has:
+
+* **Execute permission** on the `FastBCP.exe` binary
+* **Read permission** on the `.lic` file
+
 
 ## Installation
 This section covers how to install the **pg_fastbcp** extension.
+
 
 ### Windows
 
@@ -61,18 +84,72 @@ If the automated script fails or you prefer to install the files manually, follo
 1. Stop your PostgreSQL service. (**Critical step** to ensure files are not in use).  
 2. Locate your PostgreSQL installation folder, typically found at:  
 ```
-
 C:\Program Files\PostgreSQL\<version>
-
-````
+```
 3. Copy the `pg_fastbcp.dll` file into the `lib` folder of your PostgreSQL installation.  
 4. Copy the `pg_fastbcp.control` and `pg_fastbcp--1.0.sql` files into the `share\extension` folder.  
 5. Restart your PostgreSQL service.  
 
-### Linux
-*(Instructions coming soon)*
-
 ---
+
+### Linux
+
+#### Automated Installation
+The easiest way to install the extension on Linux is by using the `install-linux.sh` script included in the archive.
+
+1. Extract the contents of the archive into a folder. This folder should contain:  
+   - `pg_fastbcp.so`  
+   - `pg_fastbcp.control`  
+   - `pg_fastbcp--1.0.sql`  
+   - `install-linux.sh`  
+
+2. Make the script executable:  
+```bash
+chmod +x install-linux.sh
+````
+
+3. Run the script with administrator privileges:
+
+```bash
+sudo ./install-linux.sh
+```
+
+The script will automatically detect your PostgreSQL installation and copy the files to the correct locations.
+
+#### Manual Installation
+
+If the automated script fails or you prefer to install the files manually, follow these steps:
+
+1. Stop your PostgreSQL service (important to ensure files are not in use):
+
+```bash
+sudo systemctl stop postgresql
+```
+
+2. Locate your PostgreSQL installation directory, typically:
+
+```
+/usr/lib/postgresql/<version>
+```
+
+3. Copy the files into the appropriate directories:
+
+* `pg_fastbcp.so` → PostgreSQL `lib` directory
+* `pg_fastbcp.control` and `pg_fastbcp--1.0.sql` → PostgreSQL `share/extension` directory
+
+Example:
+
+```bash
+sudo cp pg_fastbcp.so /usr/lib/postgresql/<version>/lib/
+sudo cp pg_fastbcp.control pg_fastbcp--1.0.sql /usr/share/postgresql/<version>/extension/
+```
+
+4. Restart your PostgreSQL service:
+
+```bash
+sudo systemctl start postgresql
+```
+
 
 ## SQL Setup
 After the files are in place, you need to set up the extension in your database.
@@ -90,8 +167,6 @@ DROP EXTENSION IF EXISTS pg_fastbcp CASCADE;
 CREATE EXTENSION pg_fastbcp CASCADE;
 ```
 
----
-
 
 ## Function: pg\_fasttransfer\_encrypt
 
@@ -104,17 +179,16 @@ The `xp_RunFastTransfer_secure` function will automatically decrypt any values p
 ### Syntax
 
 ```sql
-pg_fasttransfer_encrypt(text_to_encrypt text) RETURNS text
+pg_fastbcp_encrypt(text_to_encrypt text) RETURNS text
 ```
 
 ### Example
 
 ```sql
-SELECT pg_fasttransfer_encrypt('MySecurePassword');
+SELECT pg_fastbcp_encrypt('MySecurePassword');
 -- Returns: A base64-encoded encrypted string, e.g., "PgP...base64encodedstring=="
 ```
 
----
 
 ## Function: xp\_RunFastBcp\_secure Usage
 
@@ -164,34 +238,31 @@ xp_RunFastBcp_secure(
 
 ---
 
-### Windows example
+### Example
 
-This example demonstrates a transfer from an MSSQL source to a PostgreSQL target:
+This example demonstrates an extract from an Postgres source to parquet :
 
 ```sql
 SELECT * FROM xp_RunFastBcp_secure(
-  sourceconnectiontype := 'mssql',
-  sourceserver := 'localhost',
-  sourcepassword := 'MyWindowsPassword',
-  sourceuser := 'FastLogin',
-  sourcedatabase := 'tpch10',
-  sourceschema := 'dbo',
-  sourcetable := 'orders',
-  targetconnectiontype := 'pgcopy',
-  targetserver := 'localhost:15433',
-  targetuser := 'postgres',
-  targetpassword := 'MyPostgresPassword',
-  targetdatabase := 'postgres',
-  targetschema := 'public',
-  targettable := 'orders',
-  method := 'Ntile',
-  degree := 12,
-  distributekeycolumn := 'o_orderkey',
-  fileoutput := 'D:\temp\orders.parquet'
+    connectiontype := 'pgcopy',
+    server := 'localhost:15433',
+    database_name := 'postgres',
+    user_ := 'postgres',
+    password := 'ww0EBwMCf8u/x0RY54510jkBxWtIR9yjVGg61Y8mcWKyewy2+FsFJknWtaerkcHJ32d3GDC8DOtl
+meQxt6oCAYORpnXb8PBsr6E=',
+    query := 'select * from public.orders WHERE o_orderdate between ''19950101'' and ''19951231''',
+    directory := 'D:\tmp',
+    fileoutput := 'orders_1995.parquet',
+    encoding := 'UTF-8',
+    method := 'RangeId',
+    distributekeycolumn := 'o_orderkey',
+    paralleldegree := 7,
+    merge := 'true',
+    runid := 'pgcopy_to_parquet_parallel_rangeid',
+    fastbcp_path := 'D:\FastBCP-Folder'
 );
 ```
 
----
 
 ## Function Return Structure
 
@@ -205,10 +276,17 @@ The function returns a table with the following columns, providing details about
 | total\_columns  | integer | The total number of columns transferred.   |
 | total\_time | bigint  | The total execution time in milliseconds.  |
 
----
 
 ## Notes
 
-* The extension uses `pg_config` to locate PostgreSQL paths, so ensure it is available in your **PATH** if you are running the script.
-* You must have sufficient permissions to copy files into the PostgreSQL installation directories.
+* The extension uses `pg_config` to locate PostgreSQL paths, so ensure it is available in your **PATH** if you are running the script.  
+* You must have sufficient permissions to copy files into the PostgreSQL installation directories.  
+* On Linux, when directories or files are created directly by the `postgres` user (e.g., during execution of FastBCP or PostgreSQL processes), they will belong to that account.  
+  - In such cases, you may not have permission to view or access these files with your own user account.  
+  - To inspect them, you will need to either switch to the `postgres` user:  
+    ```bash
+    sudo -i -u postgres
+    ```
+    or adjust permissions if appropriate (be careful to avoid weakening security).  
+
 

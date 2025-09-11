@@ -180,10 +180,10 @@ if "%files_exist%"=="true" (
     echo 2. The extension files were updated. To apply the changes, you must
     echo    first drop the old extension, then recreate it in psql:
     echo    DROP EXTENSION pg_fastbcp;
-    echo    CREATE EXTENSION pg_fastbcp;
+    echo    CREATE EXTENSION pg_fastbcp CASCADE;
 ) else (
     echo 2. Execute the following command in psql:
-    echo    CREATE EXTENSION pg_fastbcp;
+    echo    CREATE EXTENSION pg_fastbcp CASCADE;
 )
 echo.
 

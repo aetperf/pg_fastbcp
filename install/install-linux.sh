@@ -138,9 +138,9 @@ echo "2. Then, connect to psql and execute the following command:"
 
 if [ "$FILES_EXIST" = true ]; then
     echo "   DROP EXTENSION pg_fastbcp;"
-    echo "   CREATE EXTENSION pg_fastbcp;"
+    echo "   CREATE EXTENSION pg_fastbcp CASCADE;"
 else
-    echo "   CREATE EXTENSION pg_fastbcp;"
+    echo "   CREATE EXTENSION pg_fastbcp CASCADE;"
 fi
 
 echo ""

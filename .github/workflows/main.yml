@@ -85,7 +85,7 @@ jobs:
 
       - name: Create Release Archive for PG ${{ matrix.pg_version }}
         run: |
-          zip pg_fastbcp-linux-pg${{ matrix.pg_version }}.zip pg_fastbcp.so *.sql *.control install/install-linux.sh
+          zip pg_fastbcp-linux-pg${{ matrix.pg_version }}.zip pg_fastbcp.so *.sql *.control install-linux.sh
 
       - name: Create or Update GitHub Release
         uses: softprops/action-gh-release@v2
