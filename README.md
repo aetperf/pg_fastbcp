@@ -7,6 +7,7 @@ A PostgreSQL extension to run the [FastBCP](https://www.arpe.io/fastbcp/?v=82a9e
 ## Table of Contents
 - [Prerequisites](#prerequisites)
 - [FastBCP Tool Requirement](#fastbcp-tool-requirement)
+- [Compatibility](#compatibility)
 - [Installation](#installation)
   - [Linux](#linux)
   - [Windows](#windows)
@@ -60,6 +61,22 @@ Make sure that the PostgreSQL service account (by default `NT AUTHORITY\NetworkS
 
 * **Execute permission** on the `FastBCP.exe` binary
 * **Read permission** on the `.lic` file
+
+## Compatibility
+
+The **pg_fastbcp** extension has been tested and validated on the following environments:
+
+### Windows
+- PostgreSQL **16**  
+- PostgreSQL **17**
+
+### Linux (Debian/Ubuntu 22.04 LTS)
+- PostgreSQL **15**  
+- PostgreSQL **16**  
+- PostgreSQL **17**
+
+⚠️ Other distributions or PostgreSQL versions may work but have not been officially tested.  
+
 
 
 ## Installation
@@ -194,7 +211,8 @@ SELECT pg_fastbcp_encrypt('MySecurePassword');
 ## Function: xp\_RunFastBcp\_secure Usage
 
 This is the main function to execute the FastBCP tool.
-It takes various parameters to configure the data extraction operation.
+It takes various parameters to configure the data extraction operation, you can find all the documentation of FastBCP here : 
+👉 [FastBCP Documentation](https://github.com/aetperf/FastBCP-Documentation)
 
 Password argument (`password`) will be automatically decrypted 
 
